@@ -28,7 +28,7 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/upload-static", methods=["POST"])
+@app.route("/upload/", methods=["POST"])
 def uplaod():
     print(request.headers)
     print(len(request.data))
