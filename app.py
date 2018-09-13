@@ -31,6 +31,7 @@ def index():
 @app.route("/upload/", methods=["POST"])
 def uplaod():
     print(request.headers)
+    print(request.data)
     print(len(request.data))
     print(
         os.path.isfile(
