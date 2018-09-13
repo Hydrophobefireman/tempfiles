@@ -12,6 +12,7 @@ from flask import (
 )
 
 app = Flask(__name__)
+
 upload_dir_location = os.path.join(app.root_path, "uploads")
 if not os.path.isdir(upload_dir_location):
     os.mkdir(upload_dir_location)
@@ -27,7 +28,7 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/upload/", methods=["POST"])
+@app.route("/file-upload/", methods=["POST"])
 def uplaod():
     print(request.headers)
     print(
