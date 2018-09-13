@@ -34,7 +34,7 @@ def uplaod():
     print(len(request.data))
     print(
         os.path.isfile(
-            os.path.join(upload_dir_location, request.headers.get("filename", "LEE"))
+            os.path.join("/tmp/", request.headers.get("filename", "LEE"))
         )
     )
     return "OK"
