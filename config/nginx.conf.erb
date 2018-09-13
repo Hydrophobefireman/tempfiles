@@ -90,7 +90,7 @@ http {
 			proxy_set_header           X-File-Name $http_filename;
 			proxy_set_body             off;
 			proxy_redirect             off;
-			proxy_pass                 http://app_server/file-upload;
+			proxy_pass                 http://app_server;
 			}
 		
 		location /get-cached/x/ {

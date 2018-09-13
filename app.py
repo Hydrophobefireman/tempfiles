@@ -28,7 +28,7 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/file-upload/", methods=["POST"])
+@app.route("/upload/", methods=["POST"])
 def uplaod():
     print(request.headers)
     print(
