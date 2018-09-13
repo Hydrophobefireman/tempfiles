@@ -1,0 +1,104 @@
+daemon off;
+#Heroku dynos have at least 4 cores.
+worker_processes <%= ENV["NGINX_WORKERS"] || 4 %>;
+
+events {
+
+	use epoll;
+	accept_mutex on;
+	worker_connections 1024;
+}
+http {
+	server_tokens off;
+	gzip on;
+	gzip_comp_level 7;
+	gzip_min_length 128;
+	gzip_vary on;
+	gzip_proxied any;
+	gzip_types image/x-icon text/plain text/css application/json application/javascript application/x-javascript text/javascript text/xml application/xml application/rss+xml application/atom+xml application/rdf+xml;
+	log_format l2met 'USER_AGENT=$http_user_agent X-Forwarded-For=$http_x_forwarded_for Scheme:$scheme';
+	access_log logs/nginx/access.log l2met;
+	error_log logs/nginx/error.log;
+	include mime.types;
+	default_type application/octet-stream;
+	sendfile on;
+
+	#Must read the body in 5 seconds.
+	client_body_timeout 5;
+
+	upstream app_server {
+
+		server unix:/tmp/nginx.socket fail_timeout=0;
+	}
+
+	server {
+
+		root app;
+		listen <%= ENV["PORT"] %> default_server;
+		server_name _;
+		keepalive_timeout 5;
+		add_header	X-Frame-Options "SAMEORIGIN";
+		pagespeed 	on;
+		pagespeed 	FileCachePath "/tmp/pagespeed/";
+		pagespeed 	XHeaderValue "Speedy";
+		pagespeed 	PreserveUrlRelativity on;
+		pagespeed 	LowercaseHtmlNames on;
+		pagespeed 	ModifyCachingHeaders off;
+		pagespeed 	AvoidRenamingIntrospectiveJavascript off;
+		pagespeed 	MaxCacheableContentLength -1;
+		pagespeed FetchHttps enable;
+		pagespeed RespectXForwardedProto on;
+	# pagespeed javascript experiment
+		pagespeed 	UseExperimentalJsMinifier on;
+	
+	# pagespeed default filters
+		pagespeed	RewriteLevel CoreFilters;
+	
+	# pagespeed filters
+		pagespeed CriticalImagesBeaconEnabled false;#beacons get blocked by ublock...i dont want that
+		pagespeed EnableFilters responsive_images;
+		pagespeed EnableFilters outline_javascript,lazyload_images;
+		pagespeed EnableFilters rewrite_css,rewrite_javascript;
+		pagespeed EnableFilters combine_javascript,inline_css,inline_google_font_css,inline_javascript,local_storage_cache;
+		pagespeed EnableFilters collapse_whitespace,extend_cache,remove_quotes,convert_meta_tags,insert_dns_prefetch;
+		pagespeed EnableFilters hint_preload_subresources;
+
+		# pagespeed handlers
+
+		
+		location / {
+			proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+			proxy_set_header Host $http_host;
+			proxy_redirect off;
+			proxy_pass http://app_server;
+		}		
+		location /static/ {
+			alias /app/static/;
+			try_files $uri =404;
+		}	
+		location /get~files/ {
+			sendfile on;
+			alias /app/uploads/;
+			try_files $arg_f =403;
+		}
+		location /upload/ {
+			client_body_temp_path      /app/uploads/;
+			client_body_in_file_only   on;
+			client_body_buffer_size    1M;
+			client_max_body_size       5G;
+			proxy_pass_request_headers on;
+			proxy_set_header           X-File-Name $http_filename;
+			proxy_set_body             off;
+			proxy_redirect             off;
+			proxy_pass                 http://app_server/file-upload;
+			}
+		
+		location /get-cached/x/ {
+			sendfile on;
+			alias /app/saves/;
+			try_files $arg_f =403;
+		}
+	}
+}
+
+	
