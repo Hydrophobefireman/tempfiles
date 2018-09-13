@@ -28,12 +28,13 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/upload/", methods=["POST"])
+@app.route("/upload-static", methods=["POST"])
 def uplaod():
     print(request.headers)
+    print(len(request.data))
     print(
         os.path.isfile(
-            os.path.join(upload_dir_location, request.headers.get("X-File-Name", "LEE"))
+            os.path.join(upload_dir_location, request.headers.get("filename", "LEE"))
         )
     )
     return "OK"
