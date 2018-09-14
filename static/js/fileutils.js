@@ -16,28 +16,12 @@ function progress(a, b, verb) {
     document.getElementById('progress-div').style.width = `${p}%`;
 }
 async function send_file(obj, enc) {
-    const xhr = new XMLHttpRequest;
-    const _enc_data = async (obj) => {
-        const _obj = JSON.stringify(obj);
-        const data = await fetch(`data:application/octect-stream;utf-8,${_obj}`);
-        const buf = await data.arrayBuffer();
-        const iv = crypto.getRandomValues(new Uint8Array(16));
-        const key = await crypto.subtle.generateKey({
-            'name': 'AES-CBC',
-            'length': 256
-        }, true, ['encrypt', 'decrypt']);
-        const m_key = await arrayBufferToBase64(await crypto.subtle.exportKey('raw', key)),
-            m_iv = await arrayBufferToBase64(iv);
-        const enc = await crypto.subtle.encrypt({
-            'name': 'AES-CBC',
-            iv
-        }, key, buf);
-        const dat = [enc, {
-            key: m_key,
-            iv: m_iv
-        }];
-        return dat;
-    }
+    const xhr = new XMLHttpRequest,
+        iv = obj.iv,
+        key = obj.key,
+        actname = obj.fname,
+        mtype = obj.ftp;
+
     xhr.open("POST", "/upload/");
     xhr.upload.onprogress = e => {
         progress(e.total, e.loaded, 'Uploading')
@@ -53,19 +37,20 @@ async function send_file(obj, enc) {
         const res = JSON.parse(this.response),
             nonce = res['nonce'],
             file = res['file'],
-            enc_json_keys = await _enc_data(obj),
-            bindata = enc_json_keys[0],
-            keys_meta = enc_json_keys[1],
-            key = keys_meta.key;
-        _url = `/dl/${keys_meta.iv}/${encodeURIComponent(file)}/`;
+            _url = `/dl/${iv}/${encodeURIComponent(file)}/`,
+            dat = {
+                filename: actname,
+                type: mtype
+            };
         await fetch('/create-metadata/', {
             method: 'post',
-            body: bindata,
+            body: JSON.stringify(dat),
             headers: {
-                'x-nonce': nonce
+                "x-nonce": nonce,
+                'content-type': 'application/json'
             }
-        })
-        window.history.pushState({}, document.title, _url);
+        });
+        window.history.pushState({}, document.title, abs_url(_url));
         document.getElementById('xrhf').style.display = 'block';
         const url = abs_url(_url);
         const file_url = document.getElementById('file-url'),
@@ -108,66 +93,63 @@ function processFile(evt) {
     reader.onload = async (e) => {
         const data = e.target.result,
             iv = crypto.getRandomValues(new Uint8Array(16));
+        m_iv = await arrayBufferToBase64(iv);
         const key = await crypto.subtle.generateKey({
             'name': 'AES-CBC',
             'length': 256
         }, true, ['encrypt', 'decrypt']);
-        const m_key = await arrayBufferToBase64(await crypto.subtle.exportKey('raw', key)),
-            m_iv = await arrayBufferToBase64(iv);
-        const enc = await crypto.subtle.encrypt({
+        m_key = await arrayBufferToBase64(await crypto.subtle.exportKey('raw', key));
+        enc = await crypto.subtle.encrypt({
             'name': 'AES-CBC',
             iv
         }, key, data);
         const obj = {
             key: m_key,
             iv: m_iv,
-            mime: ftp,
-            name: fname
+            fname,
+            ftp
         }
         send_file(obj, enc)
     }
     reader.readAsArrayBuffer(file);
 }
 
-function read_mime_type(file) {
-    const mimedata = {
-        '89504E47': 'image/png',
-        '47494638': 'image/gif',
-        '25504446': 'application/pdf',
-        'FFD8FFDB': 'image/jpeg',
-        'FFD8FFE0': 'image/jpeg',
-        '504B0304': 'application/zip'
-    }
-    return new Promise((resolve, _) => {
-        const b4reader = new FileReader();
-        b4reader.onloadend = evt => {
-            if (evt.target.readyState === FileReader.DONE) {
-                const uint = new Uint8Array(evt.target.result)
-                let bytes = [];
-                uint.forEach((byte) => {
-                    bytes.push(byte.toString(16))
-                });
-                const hex = bytes.join('').toUpperCase();
-                resolve(mimedata[hex]);
-            }
+function arrayBufferToBase64(buffer) {
+    return new Promise((resolve, reject) => {
+        const blob = new Blob([buffer], {
+            type: 'application/octet-binary'
+        });
+        const reader = new FileReader();
+        reader.onload = evt => {
+            const dataurl = evt.target.result;
+            resolve(dataurl.substr(dataurl.indexOf(',') + 1));
         };
-        b4reader.onerror = (e) => {
-            reject(e)
-        };
-        b4reader.readAsArrayBuffer(file);
+        reader.readAsDataURL(blob);
     });
-};
-
-async function get_mime_type(file, bytelen = 4) {
-    const blob = file.slice(0, bytelen);
-    data = await read_mime_type(blob)
-    return data
+}
+async function base64ToArrayBuffer(b64) {
+    const data = await fetch(`data:application/octect-stream;base64,${b64}`);
+    return await data.arrayBuffer()
 }
 
 
+
+
+function parseqs(query = window.location.search) {
+    const params = {};
+    query = query[0] == '?' ? query.substring(1) : query;
+    query = decodeURI(query);
+    const vars = query.split('&');
+    for (let i = 0; i < vars.length; i++) {
+        const pair = vars[i].split('=');
+        params[pair[0]] = decodeURIComponent(pair[1]);
+    }
+    return params;
+};
+
 class FileDecryptor {
     constructor(__key__) {
-        this.key = __key__ || (() => parseqs()['!'])
+        this.key = (() => __key__) || (() => window.__newkey__) || (() => parseqs()['!'])
         this.constants = document.getElementById('constants') || {};
         this.iv = constants.getAttribute('data-js_iv');
         this.filename = constants.getAttribute('data-filename');
@@ -192,7 +174,7 @@ class FileDecryptor {
                 iv: await this._get_iv_as_buffer(iv)
             };
         };
-        this.decrypt = async (obj, enc) => {
+        this.decrypt = async (obj, enc, mime_type = 'application/octet-stream') => {
             const key = obj.key,
                 iv = obj.iv,
                 method = 'AES-CBC',
@@ -200,9 +182,8 @@ class FileDecryptor {
                     name: method,
                     iv
                 }, key, enc);
-            const temp_blob = new Blob([data]);
             return new Blob([data], {
-                type: await get_mime_type(temp_blob)
+                type: mime_type
             })
         }
     }
@@ -214,26 +195,25 @@ function enter_input(a) {
         dv = document.getElementById('get-key');
     dv.style.display = 'block';
     btn.addEventListener('click', () => {
-        window.__key__ = decodeURIComponent(inp.value);
+        window.__newkey__ = decodeURIComponent(inp.value);
         dv.style.display = 'none';
-        window.location.search = `?!=${encodeURIComponent(inp.value)}`
+        return _decrypt(a);
     })
 };
 
 async function _decrypt(enc_d_) {
     const decrypt = new FileDecryptor();
-    const si_o = decrypt.key();
-    console.log(si_o)
-    if (!si_o) {
-        return enter_input()
-    }
-
+    const enc_d = enc_d_ || await use_decryptor(decrypt);
     try {
-        const enc_d = enc_d_ || await use_decryptor(decrypt);
         if (!enc_d) {
             throw Error()
         }
-        const data = await decrypt.decrypt(enc_d.data, enc_d.enc);
+        const meta = enc_d.ret;
+        document.title = `Download ${meta.filename}`;
+        document.getElementById('filename-dl').innerHTML = `Downloaded:<span style='background-color:#e3e3e3'>${meta.filename}</span>`;
+        document.getElementById('dliprgr').innerHTML = 'Download Finished'
+        const mime_type = meta.type;
+        const data = await decrypt.decrypt(enc_d.data, enc_d.enc, mime_type);
         const url = URL.createObjectURL(data);
         document.getElementById('download-link').style.display = 'block';
         document.getElementById('dl-a').href = url;
@@ -241,72 +221,43 @@ async function _decrypt(enc_d_) {
     } catch (e) {
         console.log(e)
         enter_input(enc_d)
-
-
     }
 
 }
 
 function use_decryptor(decrypt) {
     return new Promise((resolve, _) => {
-        document.getElementById("progrs").style.display = "block";
         decrypt.get_data().then(data => {
             if (!data) {
                 resolve(null);
-            };
-            const f = decrypt.filename,
-                xhr = new XMLHttpRequest();
-            document.getElementById('dl-a').download = f;
-            xhr.open('GET', `/get~file?f=${encodeURIComponent(f)}`);
-            xhr.responseType = 'arraybuffer';
-            xhr.onprogress = event => {
-                const filesize = event.total;
-                document.getElementById("progrs").style.display = "block";
-                document.getElementById("div_").innerHTML =
-                    `${(event.loaded / (1024 * 1024)).toFixed(2)} MB of ${(filesize / (1024 * 1024)).toFixed(2)} MB`;
-                document.getElementById("progrs").style.width = `${((event.loaded / (1024 * 1024)) / (filesize / (1024 *1024))) *100}%`;
+            } else {
+                const f = decrypt.filename,
+                    xhr = new XMLHttpRequest();
+                document.getElementById('dl-a').download = f;
+                xhr.open('GET', `/get~file?f=${encodeURIComponent(f)}`);
+                xhr.responseType = 'arraybuffer';
+                xhr.onprogress = event => {
+                    const filesize = event.total;
+                    document.getElementById("progrs").style.display = "block";
+                    document.getElementById("div_").innerHTML =
+                        `${(event.loaded / (1024 * 1024)).toFixed(2)} MB of ${(filesize / (1024 * 1024)).toFixed(2)} MB`;
+                    document.getElementById("progrs").style.width = `${((event.loaded / (1024 * 1024)) / (filesize / (1024 *1024))) *100}%`;
 
+                }
+                xhr.onload = e => {
+                    document.getElementById("div_").innerHTML = 'Complete';
+                    document.getElementById("progrs").style.width = '100%';
+                    const enc = xhr.response;
+                    fetch(`/get~file?f=${encodeURIComponent(f)}.meta_data.json`).then(data => data.json()).then(ret => {
+                        resolve({
+                            "enc": enc,
+                            "data": data,
+                            ret
+                        })
+                    })
+                }
+                xhr.send();
             }
-            xhr.onload = e => {
-                document.getElementById("div_").innerHTML = 'Complete';
-                document.getElementById("progrs").style.width = '100%';
-                const enc = xhr.response;
-                resolve({
-                    "enc": enc,
-                    "data": data
-                })
-            }
-            xhr.send();
         })
     });
 }
-
-function arrayBufferToBase64(buffer) {
-    return new Promise((resolve, reject) => {
-        const blob = new Blob([buffer], {
-            type: 'application/octet-binary'
-        });
-        const reader = new FileReader();
-        reader.onload = evt => {
-            const dataurl = evt.target.result;
-            resolve(dataurl.substr(dataurl.indexOf(',') + 1));
-        };
-        reader.readAsDataURL(blob);
-    });
-}
-async function base64ToArrayBuffer(b64) {
-    const data = await fetch(`data:application/octect-stream;base64,${b64}`);
-    return await data.arrayBuffer()
-}
-
-function parseqs(query = window.location.search) {
-    const params = {};
-    query = query[0] == '?' ? query.substring(1) : query;
-    query = decodeURI(query);
-    const vars = query.split('&');
-    for (let i = 0; i < vars.length; i++) {
-        const pair = vars[i].split('=');
-        params[pair[0]] = decodeURIComponent(pair[1]);
-    }
-    return params;
-};

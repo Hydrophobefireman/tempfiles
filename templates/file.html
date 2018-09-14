@@ -11,57 +11,31 @@
 </head>
 
 <body>
-    <script src='/app/jsmin/fileutils.js'></script>
+    <script src='/static/jsmin/fileutils.js'></script>
     <div class=center>
-        <div>download {{f}}</div>
+        <div><span id=filename-dl>download {{f}}</span></div>
         <div>
             <div id=main>
                 <div>
-                    <span style="margin-top: 10px;">Download in Progress..</span>
+                    <span style="margin-top: 10px;" id='dliprgr'>Download in Progress..</span>
                     <div style="margin-top: 20px;"> </div>
                     <button id=progrs style="display:none;max-width:100%;width:0px;" class=ipg></button>
                     <div id=div_></div>
                     <div>
-                        <a id="dl-a" download=download>
+                        <a id="dl-a" download={{f}}>
                             <button style="display: none;" id=download-link class=ipgs>Click To Download </button>
                         </a>
                     </div>
                 </div>
             </div>
         </div>
-        <div id=filesetter>
-            <span id=helptext>Click here to Name your file</span>
-            <div>
-                <input id="valuef" value="download" class=ipgs maxlength="1000" style="text-transform:none;max-width:30%;cursor:text;">
-                <button id=namesh_3 class=ipgs style="width:auto;">Change Name</button>
-            </div>
-            <div id=get-key style="display:none;margin-top:15px;">
-                <div>Your Key Is Incorrect or invalid</div>
-                <input id="keyval" value="" class=ipgs maxlength="1000" style="text-transform:none;max-width:30%;cursor:text;">
-                <button id=keybtn class=ipgs style="width:auto;">Change Name</button>
-            </div>
-
+        <div id=get-key style="display:none;margin-top:15px;">
+            <div>Your Key Is Incorrect or invalid</div>
+            <input id="keyval" value="" type="password" class=ipgs maxlength="1000" style="text-transform:none;max-width:30%;cursor:text;">
+            <button id=keybtn class=ipgs style="width:auto;">Enter Key</button>
         </div>
     </div>
     <script>
-        var namests = document.getElementById("namesh_3"),
-            namechange = function () {
-                filenames = document.getElementById("valuef").value;
-                var elem = window.document.getElementById('dl-a');
-                elem.download = filenames;
-                namests.innerText = "filename Changed"
-            }
-        namests.addEventListener("click", namechange);
-        namests, addEventListener('keydown', function (e) {
-            if (e.keyCode === 13) {
-                namechange()
-            }
-        })
-        var invs = document.getElementById("valuef");
-        invs.addEventListener("click", function () {
-            namests.innerText = "Change Name";
-        })
-
         /*
                 document.getElementById("progrs").style.display = "block";
                 if (!filesize == 0) {

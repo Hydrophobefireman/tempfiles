@@ -31,17 +31,18 @@ def index():
 
 @app.route("/create-metadata/", methods=["POST"])
 def make_json_():
-    data = request.data
-    print(data)
-    nonce = request.headers.get("x-nonce")
-    filename = session.get(nonce)
-    meta_file = os.path.join(upload_dir_location, f"{filename}.meta_data.bin")
-    with open(meta_file, "wb") as f:
-        f.write(data)
+    data = request.get_json()
+    _n_ = request.headers.get("x-nonce")
+    filename = session.get("nonce").get(_n_)
+    if not filename:
+        return "NO", 403
+    meta_file = os.path.join(upload_dir_location, f"{filename}.meta_data.json")
+    with open(meta_file, "w") as f:
+        f.write(json.dumps(data))
     return "OK", 201
 
 
-@app.route("/fetch-metadata/", methods=["POST"])
+"""
 @app.route("/app/<jsmin>/<fname>")
 def send_stat(jsmin, fname):
     if config.get("debug"):
@@ -50,7 +51,7 @@ def send_stat(jsmin, fname):
     else:
         js = "jsmin"
         print("JSMIN")
-    return send_from_directory(os.path.join(app.static_folder, js), fname)
+"""
 
 
 @app.route("/upload/", methods=["POST"])
@@ -65,7 +66,7 @@ def uplaod():
             else:
                 break
     nonce = secrets.token_urlsafe(25)
-    session["nonce"] = file
+    session["nonce"] = {nonce: fn}
     return Response(
         json.dumps({"file": fn, "nonce": nonce}), mimetype="application/json"
     )
