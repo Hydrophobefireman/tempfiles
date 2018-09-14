@@ -37,7 +37,7 @@ async function send_file(obj, enc) {
         const res = JSON.parse(this.response),
             nonce = res['nonce'],
             file = res['file'],
-            _url = `/dl/${iv}/${encodeURIComponent(file)}/`,
+            _url = `/dl/${file}/${iv}/`,
             dat = {
                 filename: actname,
                 type: mtype

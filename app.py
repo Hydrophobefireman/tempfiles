@@ -85,7 +85,7 @@ if not os.environ.get("JufoKF6D6D1UNCRrB"):
         return res
 
 
-@app.route("/dl/<iv>/<f>/", strict_slashes=False)
+@app.route("/dl/<f>/<path:iv>")
 def dl(iv, f):
     if not f or not os.path.isfile(os.path.join(upload_dir_location, f)):
         return Response(
