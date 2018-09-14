@@ -85,8 +85,9 @@ if not os.environ.get("JufoKF6D6D1UNCRrB"):
         return res
 
 
-@app.route("/dl/<f>/<path:iv>")
-def dl(f, iv):
+@app.route("/dl/<f>/")
+def dl(f):
+    iv = request.args.get("iv")
     if not f or not os.path.isfile(os.path.join(upload_dir_location, f)):
         return Response(
             json.dumps({"error": f"No file Name provided or file: {f} has expired"})
