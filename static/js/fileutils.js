@@ -234,7 +234,7 @@ function use_decryptor(decrypt) {
                 const f = decrypt.filename,
                     xhr = new XMLHttpRequest();
                 document.getElementById('dl-a').download = f;
-                xhr.open('GET', `/get~file?f=${encodeURIComponent(f)}`);
+                xhr.open('GET', `/get~file/?f=${encodeURIComponent(f)}`);
                 xhr.responseType = 'arraybuffer';
                 xhr.onprogress = event => {
                     const filesize = event.total;
@@ -248,7 +248,7 @@ function use_decryptor(decrypt) {
                     document.getElementById("div_").innerHTML = 'Complete';
                     document.getElementById("progrs").style.width = '100%';
                     const enc = xhr.response;
-                    fetch(`/get~file?f=${encodeURIComponent(f)}.meta_data.json`).then(data => data.json()).then(ret => {
+                    fetch(`/get~file/?f=${encodeURIComponent(f)}.meta_data.json`).then(data => data.json()).then(ret => {
                         resolve({
                             "enc": enc,
                             "data": data,
