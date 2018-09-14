@@ -5,55 +5,7 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>TempFiles-Save any file for quick sharing</title>
-    <style>
-        .center {
-            margin: auto;
-            text-align: center;
-        }
-        
-        body {
-            background-color: #f5f5f5;
-        }
-        
-        .rmt-u {
-            margin-top: 20px;
-            background-color: #9D71D0;
-            color: #fff;
-            display: inline-block;
-            padding: 8px;
-            border-radius: 5px;
-            cursor: pointer;
-            user-select: none;
-        }
-        
-        .up-files:hover,
-        .up-files:active {
-            box-shadow: #f5f5f5;
-        }
-        
-        #btn_s:hover,
-        #btn_s:active,
-        .btnv:hover,
-        .btnc:active {
-            box-shadow: 2px 2px #d9dce0;
-            background-color: #6200ee;
-            color: #fff;
-        }
-        
-        #btn_s,
-        .btnv {
-            /*background-color: #fff;*/
-            border-radius: 5px;
-            padding: 4px;
-            border: 1px solid #6200ee;
-            outline: none;
-            background-color: #6200ee;
-            text-transform: uppercase;
-            min-width: 80px;
-            margin: 10px;
-            cursor: pointer;
-        }
-    </style>
+    <link rel='stylesheet' href='/static/css/main.css' />
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 </head>
@@ -63,33 +15,38 @@
     <div class=center>
         <div>
             <div>Upload Files For a small amount of time to share with your friends</div>
-            <div>By Default the files are encrypted on the client side and then sent to the servers..the files are stored securely for the time they are with us</div>
+            <div>By Default the files are encrypted on the client side and then sent to the servers..the files are
+                stored securely for the time they are with us</div>
             <div class=rmt-u style="display:none">Remote Upload[unencrypted]
             </div>
             <div class="filearea" style="margin:20px;">
                 <input id=file-u type="file" style="display:none">
                 <div id="sp_oc" style="font-size: 12;" class="rmt-u up-files">Upload Files</div>
                 <div style="display:none" id='rdf'>
-                    <div>Reading File</div>
-                    <button id='progress-div' class=btnv></button>
+                    <div id=filact>{{action}} File</div>
+                    <button id='progress-div' class=btnv style="background-color:#6200ee"></button>
                 </div>
             </div>
             <div id=results>
                 <div style="display:none" id='xrhf'>
-                    <div>Uploading File</div>
-                    <button id='xhr-prog-div' class=btnv></button>
+                    <div style="margin-bottom:5px;">Click on the buttons to copy the values</div>
+                    <div>File Name:<span id=fname></span></div>
+                    <div>Your File URL is:</div>
+                    <button id='file-url' class=btnv></button>
+                    <div style="margin-left:8px" id=file-url_helper></div>
+                    <input id=file-url_input style="opacity:0;">
+                    <div>Your KeyCode Is:</div>
+                    <button id=pass-key class=btnv></button>
+                    <div style="margin-left:8px" id=pass-key_helper></div>
+                    <input id=pass-key_input style="opacity:0">
+                    <div><button class=btnv id='copyall'>Tap Here To copy direct download link [No KeyCode] needed</button></div>
+                    <input id=copy-all_input style="opacity:0">
+                    <div style="margin-left:8px" id=copy-all_helper></div>
                 </div>
             </div>
         </div>
+        <script src='/app/jsmin/fileutils.js'></script>
         <script>
-            function make_file(obj, enc, type, name) {
-                bd = new FormData()
-                bd.append(name, enc);
-                fetch('/', {
-                    method: 'post',
-                    body: bd
-                })
-            }
             const span = document.getElementById('sp_oc'),
                 fileu = document.getElementById('file-u')
             span.addEventListener('click', (e) => {
@@ -98,56 +55,7 @@
             fileu.onchange = e => {
                 processFile(e);
             }
-            var m_key, m_iv, enc;
-
-            function processFile(evt) {
-                var file = evt.target.files[0],
-                    ftp = file.type,
-                    fname = file.name;
-                reader = new FileReader();
-                reader.onprogress = e => {
-                    document.getElementById('rdf').style.display = 'block';
-                    document.getElementById('progress-div').style.width = (e.loaded / e.total) * 100 + "%";
-                }
-                reader.onload = async(e) => {
-                    var data = e.target.result,
-                        iv = crypto.getRandomValues(new Uint8Array(16));
-                    m_iv = iv;
-                    const key = await crypto.subtle.generateKey({
-                        'name': 'AES-CBC',
-                        'length': 256
-                    }, true, ['encrypt', 'decrypt']);
-                    m_key = await crypto.subtle.exportKey('raw', key);
-                    enc = await crypto.subtle.encrypt({
-                        'name': 'AES-CBC',
-                        iv
-                    }, key, data);
-                    console.log(enc);
-                    var btx = await fetch_text_keys(m_key, m_iv)
-                    make_file(btx, enc, ftp, fname)
-                }
-                reader.readAsArrayBuffer(file);
-            }
-
-
-            async function fetch_text_keys(k, iv) {
-                var key, t_iv;
-                var data = await fetch('/ktb', {
-                    method: 'post',
-                    body: k
-                })
-                var res = await data.text();
-                var key = await res;
-                var ivd = await fetch('/ktb', {
-                    method: 'post',
-                    body: iv
-                })
-                var ret = await ivd.text();
-                var t_iv = await ret;
-                return {
-                    "key": key,
-                    iv: t_iv
-                }
-            }
         </script>
 </body>
+
+</html>

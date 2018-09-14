@@ -1,0 +1,96 @@
+.center {
+    margin: auto;
+    text-align: center;
+}
+
+body {
+    background-color: #f5f5f5;
+}
+
+.rmt-u {
+    margin-top: 20px;
+    background-color: #9D71D0;
+    color: #fff;
+    display: inline-block;
+    padding: 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.up-files:hover,
+.up-files:active {
+    box-shadow: #f5f5f5;
+}
+
+#btn_s:hover,
+#btn_s:active,
+.btnv:hover,
+.btnc:active {
+    box-shadow: 2px 2px #d9dce0;
+    background-color: #6200ee;
+    color: #fff;
+}
+
+#btn_s,
+.btnv {
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 4px;
+    border: 1px solid #6200ee;
+    outline: none;
+    color: #6200ee;
+    min-width: 80px;
+    margin: 10px;
+    cursor: pointer;
+}
+
+.ipg {
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    padding: 8px;
+    border: none;
+    outline: none;
+    background: #3367d6;
+    color: white;
+    text-transform: uppercase;
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    transition: 0.5s;
+}
+
+.ipgs {
+    border-radius: 5px;
+    margin: 6px;
+    padding: 8px;
+    border: 1px solid #DFE1E5;
+    width: 100%;
+    outline: none;
+    background: white;
+    text-transform: uppercase;
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    transition: 0.5s;
+}
+
+.cst {
+    margin-right: auto;
+    margin-left: auto;
+    text-align: center;
+}
+
+#div,
+#download_link {
+    margin-top: 10px;
+}
