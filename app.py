@@ -28,6 +28,18 @@ config = {"DEBUG": False}
 def index():
     return html_minify(render_template("index.html"))
 
+@app.before_request
+def enforce_https():
+    print(request.headers)
+    if (
+        request.endpoint in app.view_functions
+        and request.url.startswith("http://")
+        and not request.is_secure
+        and "127.0.0.1" not in request.url
+        and "localhost" not in request.url
+        and "herokuapp." in request.url
+    ):
+        return redirect(request.url.replace("http://", "https://"), code=301)
 
 @app.route("/create-metadata/", methods=["POST"])
 def make_json_():
