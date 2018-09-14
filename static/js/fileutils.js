@@ -37,7 +37,7 @@ async function send_file(obj, enc) {
         const res = JSON.parse(this.response),
             nonce = res['nonce'],
             file = res['file'],
-            _url = `/dl/${file}/?iv=${encodeURIComponent(iv)}`,
+            _url = `/dl/${file}/`,
             dat = {
                 filename: actname,
                 type: mtype
@@ -50,9 +50,13 @@ async function send_file(obj, enc) {
                 'content-type': 'application/json'
             }
         });
-        window.history.pushState({}, document.title, abs_url(_url));
-        document.getElementById('xrhf').style.display = 'block';
         const url = abs_url(_url);
+        const furl = new URL(url);
+        const param_url = url_create(furl.search, {
+            "iv": iv
+        })
+        window.history.pushState({}, document.title, `${furl}?${param_url}`);
+        document.getElementById('xrhf').style.display = 'block';
         const file_url = document.getElementById('file-url'),
             file_url_input = document.getElementById('file-url_input'),
             file_url_helper = document.getElementById('file-url_helper'),
@@ -63,12 +67,17 @@ async function send_file(obj, enc) {
             c_direct_input = document.getElementById('copy-all_input'),
             c_direct_helper = document.getElementById('copy-all_helper'),
             fname = document.getElementById('fname');
+
         fname.innerHTML = file;
         file_url.innerHTML = url;
         file_url_input.value = url;
         pass_key.innerHTML = key;
         pass_key_input.value = key;
-        c_direct_input.value = `${url}?!=${encodeURIComponent(key)}`;
+        params = url_create(window.location.search, {
+            "key": key,
+            iv
+        })
+        c_direct_input.value = `${url}?${params}`;
         c_direct.onclick = () => {
             copy_this(c_direct_input, c_direct_helper)
         }
@@ -149,7 +158,11 @@ function parseqs(query = window.location.search) {
 
 class FileDecryptor {
     constructor(__key__) {
-        this.key = (() => __key__) || (() => window.__newkey__) || (() => parseqs()['!'])
+        this.key = (() => {
+            return __key__ ||
+                window.__newkey__ ||
+                parseqs()['key']
+        })
         this.constants = document.getElementById('constants') || {};
         this.iv = constants.getAttribute('data-js_iv');
         this.filename = constants.getAttribute('data-filename');
@@ -166,13 +179,14 @@ class FileDecryptor {
             const __key = this.key() || window.__newkey__;
             if (!__key) {
                 return false
+            } else {
+                const key = await this._get_crypto(__key),
+                    iv = this.iv;
+                return {
+                    key,
+                    iv: await this._get_iv_as_buffer(iv)
+                };
             }
-            const key = await this._get_crypto(__key),
-                iv = this.iv;
-            return {
-                key,
-                iv: await this._get_iv_as_buffer(iv)
-            };
         };
         this.decrypt = async (obj, enc, mime_type = 'application/octet-stream') => {
             const key = obj.key,
@@ -260,4 +274,14 @@ function use_decryptor(decrypt) {
             }
         })
     });
+}
+
+function url_create(_search, param) {
+    const search = new URLSearchParams(_search);
+    const keys = Object.keys(param);
+    for (k of keys) {
+        v = param[k];
+        search.set(k, v)
+    }
+    return search.toString()
 }
