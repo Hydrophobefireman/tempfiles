@@ -76,7 +76,7 @@ http {
 			alias /app/static/;
 			try_files $uri =404;
 		}	
-		location /get~files/ {
+		location /get~file/ {
 			sendfile on;
 			alias /app/uploads/;
 			try_files $arg_f =403;
