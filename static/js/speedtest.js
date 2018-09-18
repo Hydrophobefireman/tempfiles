@@ -72,28 +72,31 @@ const dl_req = () => {
     return new Promise((resolve, reject) => {
         avg_ul.innerHTML = 'Upload will begin after the download';
         avg_ul.style.display = 'block';
-        const xhr = new XMLHttpRequest;
-        xhr.open('GET', '/s/generate-file/');
-        xhr.setRequestHeader("X-Filesize", 'max');
-        xhr.onload = e => {
-            resolve(check_performance(window.dl_start, performance.now(), avg_dl))
-        }
-        xhr.onprogress = e => {
-            const done = e.loaded,
-                time = performance.now();
-            let avg = done / 1048576 / ((time - window.dl_start) / 1e3),
-                units = 'MB';
-            if (avg <= 0.001) {
-                units = 'KB';
-                avg *= 1024;
+        fetch('/s/generate-file/').then(res => res.text()).then(ret => {
+            const xhr = new XMLHttpRequest;
+            xhr.open('GET', ret);
+            xhr.setRequestHeader("X-Filesize", 'max');
+            xhr.onload = e => {
+                resolve(check_performance(window.dl_start, performance.now(), avg_dl))
             }
-            avg_dl.style.display = 'block';
-            avg_dl.innerHTML = `${avg.toFixed(2)}  ${units}/sec`;
-        }
-        window.dl_start = performance.now()
-        xhr.send()
+            xhr.onprogress = e => {
+                const done = e.loaded,
+                    time = performance.now();
+                let avg = done / 1048576 / ((time - window.dl_start) / 1e3),
+                    units = 'MB';
+                if (avg <= 0.001) {
+                    units = 'KB';
+                    avg *= 1024;
+                }
+                avg_dl.style.display = 'block';
+                avg_dl.innerHTML = `${avg.toFixed(2)}  ${units}/sec`;
+            }
+            window.dl_start = performance.now()
+            xhr.send()
+        })
     })
 }
+
 const blobgen = (t) => {
     return new ArrayBuffer(t);
 }

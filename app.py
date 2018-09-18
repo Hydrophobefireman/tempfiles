@@ -77,7 +77,7 @@ def send_bin():
     with open(filename, "wb") as f:
         for data in random_gen(size):
             f.write(data)
-    return redirect(f"/get~file/?f={fn}", code=302)
+    return f"/get~file/?f={fn}"
 
 
 @app.route("/upload/", methods=["POST"])
