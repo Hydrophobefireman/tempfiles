@@ -67,15 +67,17 @@ def send_bin():
     size = 50 * 1024 * 1024
 
     def random_gen(fs):
-        while fs:
-            fs -= 4096
-            yield os.getrandom(4096)
+        bytesize = fs if fs < 4096 else 4096
+        while fs > 0:
+            yield os.getrandom(bytesize)
+            fs -= bytesize
 
-    return Response(
-        random_gen(size),
-        content_type="application/octet-stream",
-        headers={"content-length": size},
-    )
+    fn = secrets.token_urlsafe(50)
+    filename = os.path.join(app.root_path, "uploads", fn)
+    with open(filename, "wb") as f:
+        for data in random_gen(size):
+            f.write(data)
+    return redirect(f"/get~file/?f={fn}", code=302)
 
 
 @app.route("/upload/", methods=["POST"])
