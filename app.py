@@ -14,6 +14,7 @@ from flask import (
 import json
 import secrets
 from htmlmin.minify import html_minify
+import random
 
 app = Flask(__name__)
 
@@ -42,16 +43,25 @@ def make_json_():
     return "OK", 201
 
 
-"""
-@app.route("/app/<jsmin>/<fname>")
-def send_stat(jsmin, fname):
-    if config.get("debug"):
-        js = "js"
-        print("DEBUGFILE")
-    else:
-        js = "jsmin"
-        print("JSMIN")
-"""
+@app.route("/speedtest/", strict_slashes=False)
+def speed_test():
+    return html_minify(render_template("speed.html"))
+
+
+@app.route("/s/generate-file/")
+def send_bin():
+    size = 50 * 1024 * 1024
+
+    def random_gen(fs):
+        while fs:
+            fs -= 4096
+            yield os.getrandom(4096)
+
+    return Response(
+        random_gen(size),
+        content_type="application/octet-stream",
+        headers={"content-length": size},
+    )
 
 
 @app.route("/upload/", methods=["POST"])
@@ -73,6 +83,13 @@ def uplaod():
 
 
 if not os.environ.get("JufoKF6D6D1UNCRrB"):
+
+    @app.route("/s/uploads/", methods=["POST"])
+    def no_nginx_upload_handler():
+        data = request.data
+        del data
+        print("Handling File upload through flask")
+        return "OK"
 
     @app.route("/get~file/", strict_slashes=False)
     def send_enc_file():
