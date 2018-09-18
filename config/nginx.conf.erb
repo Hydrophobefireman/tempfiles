@@ -93,7 +93,7 @@ http {
 		location /s/uploads/ {
 			client_body_buffer_size    1M;
 			client_max_body_size       7G;
-			return 200 'OK'
+			return 200 'OK';
 		}
 		location /get-cached/x/ {
 			sendfile on;

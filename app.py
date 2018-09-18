@@ -29,6 +29,7 @@ config = {"DEBUG": False}
 def index():
     return html_minify(render_template("index.html"))
 
+
 @app.before_request
 def enforce_https():
     print(request.headers)
@@ -41,6 +42,7 @@ def enforce_https():
         and "herokuapp." in request.url
     ):
         return redirect(request.url.replace("http://", "https://"), code=301)
+
 
 @app.route("/create-metadata/", methods=["POST"])
 def make_json_():
