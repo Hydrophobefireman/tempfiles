@@ -67,7 +67,8 @@ def send_bin():
     size = 50 * 1024 * 1024
 
     def random_gen(fs):
-        bytesize = fs if fs < 4096 else 4096
+        size = 4096 * 1024
+        bytesize = max([fs, size])
         while fs > 0:
             yield os.getrandom(bytesize)
             fs -= bytesize
