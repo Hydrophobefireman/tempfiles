@@ -101,6 +101,7 @@ if not os.environ.get("JufoKF6D6D1UNCRrB"):
     @app.route("/s/uploads/", methods=["POST"])
     def no_nginx_upload_handler():
         data = request.data
+        print(len(data))
         del data
         print("Handling File upload through flask")
         return "OK"
