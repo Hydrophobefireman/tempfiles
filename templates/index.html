@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>TempFiles-Save any file for quick sharing</title>
-    <link rel='stylesheet' href='../static/css/main.css' />
+    <link rel='stylesheet' href='/static/css/main.css' />
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 </head>
@@ -16,12 +16,18 @@
         <div>
             <div><span><a href="/speedtest/">Click Here to try a speedtest</a></span></div>
             <div>Upload Files For a small amount of time to share with your friends</div>
-            <div class=rmt-u style="display:none">Remote Upload[unencrypted]
+            <div class=rmt-u id=rmt-u style="display:block">Remote Upload
             </div>
+            <div id=rmtbh style="display:none">
+                <input class="ipgs" style="user-select:auto;text-transform: none" id='remote_inp' placeholder="enter url">
+                <button class='ipgs' id='gobtn'>Go</button>
+            </div>
+
             <div class="filearea" style="margin:20px;">
                 <input id=file-u type="file" style="display:none">
                 <div id="sp_oc" style="font-size: 12;" class="rmt-u up-files">Upload Files</div>
-                <div style="display:none" id='rdf'>
+                <div style="display:none" id='
+                    rdf'>
                     <div id=filact>{{action}} File</div>
                     <button id='progress-div' class=btnv style="background-color:#6200ee"></button>
                 </div>
@@ -46,6 +52,22 @@
             fileu.onchange = e => {
                 upload(e);
             }
+            document.getElementById('rmt-u').onclick = function () {
+                unfade(document.getElementById('rmtbh'))
+            }
+            document.getElementById('remote_inp').addEventListener('keydown', ({
+                keyCode
+            }) => {
+                if (document.getElementById('remote_inp').value.replace(/[^\\w]/, '').length === 0) {
+                    document.getElementById('gobtn').disabled = true;
+                } else {
+                    document.getElementById('gobtn').disabled = false
+                }
+                if (keyCode === 13) {
+                    subm_url()
+                }
+            });
+            document.getElementById('gobtn').addEventListener('click', sbm_url)
         </script>
 </body>
 

@@ -10,12 +10,14 @@ from flask import (
     send_from_directory,
     session,
     make_response,
+    stream_with_context,
 )
 import json
 import secrets
 from htmlmin.minify import html_minify
 import random
-from urllib.parse import quote
+from urllib.parse import quote, urlparse
+import requests
 
 app = Flask(__name__)
 
@@ -98,6 +100,35 @@ def send_image():
     with open(imgpath, "rb") as f:
         buf = base64.b64encode(f.read()).decode()
     return Response(response=buf, mimetype="application/octet-stream")
+
+
+@app.route("/fetch/", strict_slashes=False)
+def remote_upl():
+    url = request.args.get("url", "").strip()
+    ua = request.headers.get("user-agent", "Mozilla/5.0")
+    parsed_url = urlparse(url)
+    if not parsed_url.scheme == "http" or not parsed_url.scheme == "https":
+        return f"Invalid URL[Reason:Bad Protocol:{parsed_url.scheme}"
+    sess = requests.Session()
+    req = sess.get(url, headers={"User-Agent": ua}, allow_redirects=True, stream=True)
+    for _ in req.iter_content(chunk_size=10):
+        req.close()
+    url = req.url
+    req_data = req.headers
+    mt = req_data.get("Content-Type") or "application/octet-stream"
+    session["content-type"] = mt
+    session["acc-range"] = req_data.get("accept-ranges", "").lower() == "bytes"
+    print("[debug]Response Headers::", req_data)
+    filesize = req_data.get("Content-Length")
+    print("FileSize:", filesize)
+    if filesize is None:  # Web page or a small file probably
+        fils = requests.get(url, headers={"User-Agent": ua}, stream=True)
+        return Response(
+            stream_with_context(fils.iter_content(chunk_size=2048)),
+            content_type=fils.headers.get("Content-Type"),
+        )
+    session["filesize"] = filesize
+    return render_template("send_blob.html", url=url)
 
 
 if not os.environ.get("JufoKF6D6D1UNCRrB"):

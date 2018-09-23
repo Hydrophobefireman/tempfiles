@@ -75,11 +75,6 @@ body {
     background: white;
     text-transform: uppercase;
     cursor: pointer;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
     transition: 0.5s;
 }

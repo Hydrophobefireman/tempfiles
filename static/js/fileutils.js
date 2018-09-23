@@ -4,6 +4,46 @@ function abs_url(relative_url) {
     return a.href;
 }
 
+function unfade(element) {
+    let op = 0.1;
+    element.style.display = 'block';
+    const timer = setInterval(() => {
+        if (op >= 1) {
+            clearInterval(timer);
+        }
+        element.style.opacity = op;
+        element.style.filter = `alpha(opacity=${op * 100})`;
+        op += op * 0.1;
+    }, 10);
+}
+
+function fade(element) {
+    let op = 0.1;
+    element.style.display = 'block';
+    const timer = setInterval(() => {
+        if (parseInt(op) <= 0) {
+            clearInterval(timer);
+            element.style.display = 'none';
+        }
+        element.style.opacity = op;
+        element.style.filter = `alpha(opacity=${op * 100})`;
+        op -= op * 0.1;
+    }, 15);
+}
+
+function sbm_url() {
+    const input = document.getElementById('remote_inp');
+    const txt = input.value.replace(/[^\w]/, '');
+    if (txt.length === 0) {
+        document.getElementById('gobtn').innerHTML = 'Invalid Characters';
+        document.getElementById('gobtn').disabled = true;
+    }
+    document.getElementById('gobtn').disabled = false;
+    window.location.href = `/fetch/?url=${encodeURIComponent(input.value)}`;
+    return
+
+}
+
 function progress(a, b, verb) {
     const p = (b / a) * 100;
     if (p >= 100) {
