@@ -259,7 +259,7 @@ if not os.environ.get("JufoKF6D6D1UNCRrB"):
         res.headers["is-NGINX"] = False
         res.headers[
             "Content-Disposition"
-        ] = f"attachment; filename={request.args.get('f')}"
+        ] = f"attachment; filename={request.args.get('n')}"
         return res
 
 
