@@ -15,6 +15,7 @@ import json
 import secrets
 from htmlmin.minify import html_minify
 import random
+from urllib.parse import quote
 
 app = Flask(__name__)
 
@@ -44,19 +45,6 @@ def enforce_https():
         return redirect(request.url.replace("http://", "https://"), code=301)
 
 
-@app.route("/create-metadata/", methods=["POST"])
-def make_json_():
-    data = request.get_json()
-    _n_ = request.headers.get("x-nonce")
-    filename = session.get("nonce").get(_n_)
-    if not filename:
-        return "NO", 403
-    meta_file = os.path.join(upload_dir_location, f"{filename}.meta_data.json")
-    with open(meta_file, "w") as f:
-        f.write(json.dumps(data))
-    return "OK", 201
-
-
 @app.route("/speedtest/", strict_slashes=False)
 def speed_test():
     return html_minify(render_template("speed.html"))
@@ -67,11 +55,13 @@ def send_bin():
     size = 50 * 1024 * 1024
 
     def random_gen(fs):
-        size = 4096 * 1024
-        bytesize = max([fs, size])
-        while fs > 0:
-            yield os.getrandom(bytesize)
+        _size = 4096 * 1024
+        bytesize = _size
+        print(fs, bytesize)
+        while fs:
             fs -= bytesize
+            print(fs)
+            yield os.getrandom(bytesize)
 
     fn = secrets.token_urlsafe(50)
     filename = os.path.join(app.root_path, "uploads", fn)
@@ -83,9 +73,11 @@ def send_bin():
 
 @app.route("/upload/", methods=["POST"])
 def uplaod():
-    fn = secrets.token_urlsafe(10)
-    file = os.path.join(upload_dir_location, fn)
-    with open(file, "wb") as f:
+    fn = secrets.token_urlsafe(6)
+    xfn = request.headers.get("x-file-name")
+    with open(os.path.join(upload_dir_location, f"{fn}.data"), "w") as f:
+        f.write(xfn)
+    with open(os.path.join(upload_dir_location, xfn), "wb") as f:
         while 1:
             chunk = request.stream.read(4096 * 1024)
             if chunk:
@@ -93,10 +85,19 @@ def uplaod():
             else:
                 break
     nonce = secrets.token_urlsafe(25)
-    session["nonce"] = {nonce: fn}
     return Response(
         json.dumps({"file": fn, "nonce": nonce}), mimetype="application/json"
     )
+
+
+@app.route("/imgs-source/")
+def send_image():
+    img = "image-r.jpg"
+    #  img = "test.js"
+    imgpath = os.path.join(app.root_path, "static", img)
+    with open(imgpath, "rb") as f:
+        buf = base64.b64encode(f.read()).decode()
+    return Response(response=buf, mimetype="application/octet-stream")
 
 
 if not os.environ.get("JufoKF6D6D1UNCRrB"):
@@ -116,18 +117,18 @@ if not os.environ.get("JufoKF6D6D1UNCRrB"):
             send_from_directory(upload_dir_location, request.args.get("f"))
         )
         res.headers["is-NGINX"] = False
-        res.headers["Content-Type"] = "application/octet-stream"
+        res.headers[
+            "Content-Disposition"
+        ] = f"attachment; filename={request.args.get('f')}"
         return res
 
 
-@app.route("/dl/<f>/")
-def dl(f):
-    iv = request.args.get("iv")
-    if not f or not os.path.isfile(os.path.join(upload_dir_location, f)) or not iv:
-        return Response(
-            json.dumps({"error": f"No file Name provided or file: {f} has expired"})
-        )
-    return html_minify(render_template("file.html", f=f, iv=iv))
+@app.route("/dl/<fn>/")
+def dl(fn):
+    with open(os.path.join(upload_dir_location, f"{fn}.data"), "r") as h:
+        f = h.read()
+    resp = redirect("/get~file/?f=" + quote(f))
+    return resp
 
 
 @app.route("/ktb", methods=["POST"])

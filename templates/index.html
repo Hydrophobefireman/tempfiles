@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>TempFiles-Save any file for quick sharing</title>
-    <link rel='stylesheet' href='/static/css/main.css' />
+    <link rel='stylesheet' href='../static/css/main.css' />
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 </head>
@@ -16,8 +16,6 @@
         <div>
             <div><span><a href="/speedtest/">Click Here to try a speedtest</a></span></div>
             <div>Upload Files For a small amount of time to share with your friends</div>
-            <div>By Default the files are encrypted on the client side and then sent to the servers..the files are
-                stored securely for the time they are with us</div>
             <div class=rmt-u style="display:none">Remote Upload[unencrypted]
             </div>
             <div class="filearea" style="margin:20px;">
@@ -33,16 +31,8 @@
                     <div style="margin-bottom:5px;">Click on the buttons to copy the values</div>
                     <div>New File Name:<span id=fname></span></div>
                     <div>Your File URL is:</div>
-                    <button id='file-url' class=btnv></button>
+                    <input id='file-url' class=btnv readonly>
                     <div style="margin-left:8px" id=file-url_helper></div>
-                    <input id=file-url_input style="opacity:0;">
-                    <div>Your KeyCode Is:</div>
-                    <button id=pass-key class=btnv></button>
-                    <div style="margin-left:8px" id=pass-key_helper></div>
-                    <input id=pass-key_input style="opacity:0">
-                    <div><button class=btnv id='copyall'>Tap Here To copy direct download link [No KeyCode] needed</button></div>
-                    <input id=copy-all_input style="opacity:0">
-                    <div style="margin-left:8px" id=copy-all_helper></div>
                 </div>
             </div>
         </div>
@@ -54,7 +44,7 @@
                 fileu.click()
             });
             fileu.onchange = e => {
-                processFile(e);
+                upload(e);
             }
         </script>
 </body>

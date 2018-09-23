@@ -77,6 +77,7 @@ const dl_req = () => {
             xhr.open('GET', ret);
             xhr.setRequestHeader("X-Filesize", 'max');
             xhr.onload = e => {
+                console.log(e);
                 resolve(check_performance(window.dl_start, performance.now(), avg_dl))
             }
             xhr.onprogress = e => {
