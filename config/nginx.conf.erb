@@ -79,7 +79,7 @@ http {
 		location /get~file/ {
 			sendfile on;
 			alias /app/uploads/;
-			add_header Content-Disposition 'attachment;filename="$arg_f"'
+			add_header Content-Disposition 'attachment;filename="$arg_f"';
 			try_files $arg_f =403;
 		}
 		location /upload/ {
