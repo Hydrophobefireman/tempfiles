@@ -78,16 +78,16 @@ def speed_test():
 
 @app.route("/s/generate-file/")
 def send_bin():
-    size = 50 * 1024 * 1024
+    size = 52428800
 
     def random_gen(fs):
-        _size = 4096 * 1024
-        bytesize = _size
-        print(fs, bytesize)
-        while fs >= 0:
-            fs -= bytesize
-            print(fs)
-            yield os.getrandom(bytesize)
+        b = 4 * 1024 * 1024
+        fsize = fs
+        while fsize:
+            tw = min(fsize, b)
+            fsize -= tw
+            print(fsize)
+            yield os.getrandom(tw)
 
     fn = secrets.token_urlsafe(50)
     filename = os.path.join(app.root_path, "uploads", fn)
@@ -103,7 +103,7 @@ def uplaod():
     xfn = request.headers.get("x-file-name")
     with open(os.path.join(upload_dir_location, f"{fn}.data"), "w") as f:
         f.write(xfn)
-    with open(os.path.join(upload_dir_location, fn), "wb") as f:
+    with open(os.path.join(upload_dir_location, xfn), "wb") as f:
         while 1:
             chunk = request.stream.read(4096 * 1024)
             if chunk:
@@ -174,7 +174,6 @@ def send_files():
 
 
 def checksum_f(filename, meth="sha256"):
-    """hashes exactly the first 5 megabytes of a file"""
     foo = getattr(hashlib, meth)()
     _bytes = 0
     total = os.path.getsize(filename)
@@ -259,7 +258,7 @@ if not os.environ.get("JufoKF6D6D1UNCRrB"):
         res.headers["is-NGINX"] = False
         res.headers[
             "Content-Disposition"
-        ] = f"attachment; filename={request.args.get('n')}"
+        ] = f"attachment; filename={request.args.get('f')}"
         return res
 
 
@@ -267,7 +266,7 @@ if not os.environ.get("JufoKF6D6D1UNCRrB"):
 def dl(fn):
     with open(os.path.join(upload_dir_location, f"{fn}.data"), "r") as h:
         f = h.read()
-    resp = redirect(f"/get~file/?f={quote(fn)}&n={quote(f)}")
+    resp = redirect("/get~file/?f=" + quote(f))
     return resp
 
 

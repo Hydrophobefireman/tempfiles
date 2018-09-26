@@ -80,7 +80,6 @@ http {
 			sendfile on;
 			alias /app/uploads/;
 			add_header Content-Type application/octet-stream;
-            add_header Content-Disposition 'attachment;filename="$arg_n"';	
 			try_files $arg_f =403;
 		}
 		location /upload/ {

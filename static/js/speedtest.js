@@ -106,10 +106,24 @@ const ul_req = async () => {
         payload = blobgen(20 * 1024 * 1024),
         upload_post = async (url, data) => {
             const start = performance.now();
-            fetch(url, {
-                method: "POST",
-                body: data
-            }).then(_ => check_performance(start, performance.now(), avg_ul, 'upload'))
+            const xhr = new XMLHttpRequest;
+            xhr.open('POST', url);
+            xhr.upload.onprogress = e => {
+                const done = e.loaded,
+                    time = performance.now();
+                let avg = done / 1048576 / ((time - window.dl_start) / 1e3),
+                    units = 'MB';
+                if (avg <= 0.001) {
+                    units = 'KB';
+                    avg *= 1024;
+                }
+                avg_ul.style.display = 'block';
+                avg_ul.innerHTML = `${avg.toFixed(2)}  ${units}/sec`;
+            }
+            xhr.send(data)
+            xhr.onload = () => {
+                check_performance(start, performance.now(), avg_ul, 'upload')
+            }
         }
     avg_ul.innerHTML = 'Checking Upload Speed';
     console.log(payload)

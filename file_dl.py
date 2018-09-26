@@ -27,7 +27,7 @@ class _crayons:
 
     def __init__(self, text, _color=""):
         text = str(text)
-        color = self.__getattribute__(_color.upper())
+        color = getattr(self, _color.upper())
         self.data = color + text + self.ENDC
 
     def __repr__(self):
@@ -201,5 +201,5 @@ if __name__ == "__main__":
     filename = input(
         "Enter Filename(leave blank for random filename):\n"
     ) or secrets.token_urlsafe(10)
-    referer = input("Enter Referer(leave blank for default)") or "https://google.com"
+    referer = input("Enter Referer(leave blank for default)") or "https://google.com/"
     prepare_req(url, filename=filename, referer=referer)
