@@ -61,7 +61,7 @@ const videoframes = () => {
             video.currentTime = i;
         }, false);
         video.addEventListener('seeked', () => {
-            repeat(100, async () => {
+            repeat(50, async () => {
                 await generateThumbnail(i);
             })
             i++;
