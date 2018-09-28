@@ -45,7 +45,7 @@ const videoframes = () => {
             const img = new Image;
             document.body.appendChild(img);
             img.style.display = '';
-            'none';
+            //'none';
             img.src = URL.createObjectURL(bb)
         }
         window.pngbuf = []
@@ -55,7 +55,7 @@ const videoframes = () => {
         let i = 0;
         const thumbs_div = document.createElement("div");
         thumbs_div.style.display = '';
-        'none';
+        //'none';
         document.body.appendChild(thumbs_div)
         const video = document.createElement("video");
         const thumbs = thumbs_div;
@@ -116,7 +116,7 @@ const image_test = async () => {
         img = new Image();
     //document.body.appendChild(img);
     img.style.display = '';
-    'none';
+    //'none';
     const c = document.createElement("canvas");
     const ctx = c.getContext("2d");
     img.onload = e => {
@@ -127,7 +127,7 @@ const image_test = async () => {
     img.src = URL.createObjectURL(blob);
     document.body.appendChild(c);
     c.style.display = '';
-    'none';
+    //'none';
     return (performance.now() - s)
 };
 const enc_test = async (s = 65536) => {
