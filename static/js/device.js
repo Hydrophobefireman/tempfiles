@@ -41,7 +41,7 @@ const videoframes = () => {
                 Joiner.append(blob)
             }
             const bb = Joiner.getBlob()
-            var img = new Image;
+            const img = new Image;
             document.body.appendChild(img);
             img.style.display = 'none';
             img.src = URL.createObjectURL(bb)
@@ -87,7 +87,7 @@ const videoframes = () => {
             const im = new Image;
             im.src = c.toDataURL();
             blb = c.toBlob(
-                function (b) {
+                b => {
                     console.log("PNGBUF")
                     window.pngbuf.push(b)
                 }, 'image/png')
@@ -95,6 +95,7 @@ const videoframes = () => {
         }
     });
 }
+
 async function base64ToArrayBuffer(b64) {
     const data = await fetch(`data:application/octect-stream;base64,${b64}`);
     return await data.arrayBuffer()

@@ -1,1 +1,13 @@
 <div>OPEN CONSOLE</div>
+
+<script src='/static/jsmin/device.js'>
+</script>
+<script>
+    ((async () => {
+        a = 0
+        for (const b of funcs) {
+            a += await b()
+        }
+        document.write(`TIME TAKEN:${a}Seconds[BETA]`)
+    }))()
+</script>

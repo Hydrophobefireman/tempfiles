@@ -293,9 +293,11 @@ def chk():
     dat = request.data
     return base64.b64encode(dat)
 
-@app.route("/test/",strict_slashes=False)
+
+@app.route("/test/", strict_slashes=False)
 def spe():
     return render_template("stest.html")
+
 
 @app.route("/btk", methods=["POST"])
 def chh():
