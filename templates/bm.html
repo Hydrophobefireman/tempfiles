@@ -37,6 +37,7 @@
                         for (b of keys) {
                             const el = document.getElementById(b);
                             const func = window.funcs_el[b];
+                            el.innerHTML = 'Executing Task'
                             el.innerHTML = `${await func()}Seconds`;
                         }
                     }

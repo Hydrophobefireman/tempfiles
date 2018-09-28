@@ -1,7 +1,7 @@
 function webcams() {
     document
         .body
-        .innerHTML = '<video id="video" controls style=display:none></video>';
+        .innerHTML = '<video id="video" controls ></video>';
     navigator.getUserMedia = navigator.getUserMedia ||
         navigator.webkitGetUserMedia ||
         navigator.mozGetUserMedia;
