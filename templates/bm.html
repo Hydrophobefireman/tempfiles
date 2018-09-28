@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Device BenchMarks</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src='/static/jsmin/device.js'></script>
     <style>
         .center {
             margin: auto;
@@ -28,11 +29,18 @@
                 </div>
             </div>
             <script>
-                const btn = document.getElementById('test-start');
-                btn.onclick = e => {
-                    document.getElementById('testarea').style.display = 'block';
-
-                }
+                ((async () => {
+                    const btn = document.getElementById('test-start');
+                    btn.onclick = async e => {
+                        document.getElementById('testarea').style.display = 'block';
+                        const keys = Object.keys(window.funcs_el)
+                        for (b of keys) {
+                            const el = document.getElementById(b);
+                            const func = window.funcs_el[b];
+                            el.innerHTML = `${await func()}Seconds`;
+                        }
+                    }
+                }))()
             </script>
         </div>
     </div>

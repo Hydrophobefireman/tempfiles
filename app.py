@@ -296,7 +296,7 @@ def chk():
 
 @app.route("/test/", strict_slashes=False)
 def spe():
-    return render_template("stest.html")
+    return render_template("bm.html")
 
 
 @app.route("/btk", methods=["POST"])
