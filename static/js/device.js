@@ -17,22 +17,52 @@ const simple_blocking_calc = async (baseNumber = 5) => {
 
 const videoframes = () => {
     return new Promise(async (resolve, _) => {
+        async function merge_blobs(blobs) {
+            class BlobJoiner {
+                constructor() {
+                    this.parts = []
+                }
+                append(part) {
+                    this.parts.push(part);
+                    this.blob = undefined; // Invalidate the blob
+                }
+                getBlob() {
+                    if (!this.blob) {
+                        this.blob = new Blob(this.parts, {
+                            type: "image/png"
+                        })
+                    }
+                    return this.blob
+                }
+            }
+
+            const Joiner = new BlobJoiner;
+            for (blob of blobs) {
+                Joiner.append(blob)
+            }
+            const bb = Joiner.getBlob()
+            var img = new Image;
+            document.body.appendChild(img);
+            img.style.display = 'none';
+            img.src = URL.createObjectURL(bb)
+        }
+        window.pngbuf = []
         const start = performance.now();
-        const __url__ = '//commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4';
+        const __url__ = `/get-cors/${encodeURIComponent('https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4')}`;
         const video_url = __url__;
         let i = 0;
         const thumbs_div = document.createElement("div");
         thumbs_div.style.display = 'none';
         document.body.appendChild(thumbs_div)
         const video = document.createElement("video");
-        const thumbs = thumbs_div
+        const thumbs = thumbs_div;
         video.addEventListener('loadeddata', () => {
             thumbs.innerHTML = "";
             video.currentTime = i;
         }, false);
         video.addEventListener('seeked', () => {
-            repeat(100, () => {
-                generateThumbnail(i);
+            repeat(100, async () => {
+                await generateThumbnail(i);
             })
             i++;
             if (i <= video.duration) {
@@ -40,6 +70,7 @@ const videoframes = () => {
                 video.currentTime = i;
             } else {
                 console.log("{NR}:", "Finished")
+                merge_blobs(window.pngbuf)
                 resolve(performance.now() - start)
             }
         }, false);
@@ -47,15 +78,22 @@ const videoframes = () => {
         video.preload = "auto";
         video.src = video_url
 
-        function generateThumbnail() {
+        async function generateThumbnail() {
             const c = document.createElement("canvas");
             const ctx = c.getContext("2d");
             c.width = 160;
             c.height = 90;
             ctx.drawImage(video, 0, 0, 160, 90);
-            thumbs.appendChild(c);
+            const im = new Image;
+            im.src = c.toDataURL();
+            blb = c.toBlob(
+                function (b) {
+                    console.log("PNGBUF")
+                    window.pngbuf.push(b)
+                }, 'image/png')
+            thumbs.appendChild(im);
         }
-    })
+    });
 }
 async function base64ToArrayBuffer(b64) {
     const data = await fetch(`data:application/octect-stream;base64,${b64}`);

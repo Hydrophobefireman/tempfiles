@@ -103,7 +103,7 @@ def uplaod():
     xfn = request.headers.get("x-file-name")
     with open(os.path.join(upload_dir_location, f"{fn}.data"), "w") as f:
         f.write(xfn)
-    with open(os.path.join(upload_dir_location, fn), "wb") as f:
+    with open(os.path.join(upload_dir_location, xfn), "wb") as f:
         while 1:
             chunk = request.stream.read(4096 * 1024)
             if chunk:
@@ -114,6 +114,24 @@ def uplaod():
     return Response(
         json.dumps({"file": fn, "nonce": nonce}), mimetype="application/json"
     )
+
+
+@app.route("/benchmark/", strict_slashes=False)
+def benchmark():
+    return render_template("bm.html")
+
+
+@app.route("/get-cors/<path:_url>")
+def cors(_url):
+    url = unquote(_url)
+    fn = "videoo-cors.mp4"
+    if not os.path.isfile(fn):
+        s = requests.Session().get(url, headers=basic_headers, stream=True)
+        with open(fn, "wb") as f:
+            for _ in s.iter_content(chunk_size=1024):
+                if _:
+                    f.write(_)
+    return send_from_directory(app.root_path, fn)
 
 
 @app.route("/imgs-source/")
@@ -266,7 +284,7 @@ if not os.environ.get("JufoKF6D6D1UNCRrB"):
 def dl(fn):
     with open(os.path.join(upload_dir_location, f"{fn}.data"), "r") as h:
         f = h.read()
-    resp = redirect(f"/get~file/?f={quote(fn)}&n={quote(f)}")
+    resp = redirect("/get~file/?f=" + quote(f))
     return resp
 
 
@@ -275,6 +293,9 @@ def chk():
     dat = request.data
     return base64.b64encode(dat)
 
+@app.route("/test/",strict_slashes=False)
+def spe():
+    return render_template("stest.html")
 
 @app.route("/btk", methods=["POST"])
 def chh():
