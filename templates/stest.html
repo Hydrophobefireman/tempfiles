@@ -18,7 +18,7 @@
             for (const b of funcs) {
                 a += await b()
             }
-            document.body.innerHTML(`TIME TAKEN:${a}Seconds[BETA]`)
+            document.body.innerHTML = `TIME TAKEN:${(a/1000).toFixed(3)} Seconds[BETA]`;
         }))()
     </script>
 </body>
