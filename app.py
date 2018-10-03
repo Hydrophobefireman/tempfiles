@@ -103,7 +103,7 @@ def uplaod():
     xfn = request.headers.get("x-file-name")
     with open(os.path.join(upload_dir_location, f"{fn}.data"), "w") as f:
         f.write(xfn)
-    with open(os.path.join(upload_dir_location, xfn), "wb") as f:
+    with open(os.path.join(upload_dir_location, fn), "wb") as f:
         while 1:
             chunk = request.stream.read(4096 * 1024)
             if chunk:
@@ -276,7 +276,7 @@ if not os.environ.get("JufoKF6D6D1UNCRrB"):
         res.headers["is-NGINX"] = False
         res.headers[
             "Content-Disposition"
-        ] = f"attachment; filename={request.args.get('f')}"
+        ] = f"attachment; filename={request.args.get('n')}"
         return res
 
 
@@ -284,7 +284,7 @@ if not os.environ.get("JufoKF6D6D1UNCRrB"):
 def dl(fn):
     with open(os.path.join(upload_dir_location, f"{fn}.data"), "r") as h:
         f = h.read()
-    resp = redirect("/get~file/?f=" + quote(f))
+    resp = redirect(f"/get~file/?f={fn}&n={quote(f)}")
     return resp
 
 
