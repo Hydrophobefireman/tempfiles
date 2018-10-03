@@ -167,4 +167,4 @@ window.funcs_el = {
     test3: image_test,
     test4: enc_test
 }
-const avg = 8400
+window.avg = 8400

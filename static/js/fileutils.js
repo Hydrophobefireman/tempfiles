@@ -74,7 +74,6 @@ async function upload(e) {
             document.execCommand('copy');
             helper && (helper.innerHTML = 'copied')
         }
-        window.history.pushState({}, document.title, file);
         document.getElementById('xrhf').style.display = 'block';
         const file_url = document.getElementById('file-url'),
             file_url_helper = document.getElementById('file-url_helper'),
