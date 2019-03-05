@@ -26,9 +26,9 @@ import file_dl
 
 app = Flask(__name__)
 ua = "Mozilla/5.0 (Windows; U; Windows NT 10.0; en-US)\
- AppleWebKit/604.1.38 (KHTML, like Gecko) Chrome/69.0.3325.162"
+ AppleWebKit/604.1.38 (KHTML, like Gecko) Chrome/68.0.3325.162"
 
-app.secret_key = "'6l5cobmJPw6oXix1X--ilCxe8zw'"
+app.secret_key = "7bf9a280"
 
 basic_headers = {
     "Accept-Encoding": "gzip, deflate",
@@ -46,7 +46,7 @@ config = {"DEBUG": False}
 
 try:
     with open(os.path.join("static", ".mimetypes")) as f:
-        _mime_types_ = json.load(f)
+        _mime_types_ = json.loads(f.read())
 except FileNotFoundError:
     _mime_types_ = {}
     print("Blank Mime Types")
@@ -59,13 +59,14 @@ def index():
 
 @app.before_request
 def enforce_https():
+    print(request.headers)
     if (
         request.endpoint in app.view_functions
         and request.url.startswith("http://")
         and not request.is_secure
         and "127.0.0.1" not in request.url
         and "localhost" not in request.url
-        and "herokuapp" in request.url
+        and "herokuapp." in request.url
     ):
         return redirect(request.url.replace("http://", "https://"), code=301)
 
@@ -115,6 +116,34 @@ def uplaod():
     )
 
 
+@app.route("/benchmark/", strict_slashes=False)
+def benchmark():
+    return render_template("bm.html")
+
+
+@app.route("/get-cors/<path:_url>")
+def cors(_url):
+    url = unquote(_url)
+    fn = "videoo-cors.mp4"
+    if not os.path.isfile(fn):
+        s = requests.Session().get(url, headers=basic_headers, stream=True)
+        with open(fn, "wb") as f:
+            for _ in s.iter_content(chunk_size=1024):
+                if _:
+                    f.write(_)
+    return send_from_directory(app.root_path, fn)
+
+
+@app.route("/imgs-source/")
+def send_image():
+    img = "image-r.jpg"
+    #  img = "test.js"
+    imgpath = os.path.join(app.root_path, "static", img)
+    with open(imgpath, "rb") as f:
+        buf = base64.b64encode(f.read()).decode()
+    return Response(response=buf, mimetype="application/octet-stream")
+
+
 @app.route("/fetch/", strict_slashes=False)
 def remote_upl():
     url = request.args.get("url", "").strip()
@@ -145,10 +174,11 @@ def remote_upl():
 
 @app.route("/proxy/f/")
 def send_files():
+    print("*************\n", request.headers, "*************\n")
     url = unquote(request.args.get("u"))
     referer = request.args.get("referer")
     acc_range = session["acc-range"]
-    print("Downloading:'")
+    print("Downloading:'" + url[:50] + "...'")
     _filename = secrets.token_urlsafe(15)
     _mime = _mime_types_.get(session.get("content-type")) or ".bin"
     session["filename"] = _filename + _mime
@@ -174,6 +204,13 @@ def checksum_f(filename, meth="sha256"):
     return foo.hexdigest()
 
 
+def dict_print(s: dict) -> None:
+    print("{")
+    for k, v in s.items():
+        print("%s:%s" % (k, v))
+    print("}")
+
+
 def threaded_req(url, referer, filename, acc_range, fs):
     print("filename:", filename)
     if not os.path.isdir(upload_dir_location):
@@ -182,6 +219,7 @@ def threaded_req(url, referer, filename, acc_range, fs):
     #    file_location = os.path.join(upload_dir_location, filename)
     dl_headers = {**basic_headers, "host": parsed_url.netloc, "referer": referer}
     print("Downloading with headers:")
+    dict_print(dl_headers)
     # So apparently you cant set headers in urlretrieve.....brilliant
     file_dl.prepare_req(
         url,
@@ -224,6 +262,7 @@ if not os.environ.get("JufoKF6D6D1UNCRrB"):
     @app.route("/s/uploads/", methods=["POST"])
     def no_nginx_upload_handler():
         data = request.data
+        print(len(data))
         del data
         print("Handling File upload through flask")
         return "OK"
@@ -247,6 +286,23 @@ def dl(fn):
         f = h.read()
     resp = redirect(f"/get~file/?f={fn}&n={quote(f)}")
     return resp
+
+
+@app.route("/ktb", methods=["POST"])
+def chk():
+    dat = request.data
+    return base64.b64encode(dat)
+
+
+@app.route("/test/", strict_slashes=False)
+def spe():
+    return render_template("bm.html")
+
+
+@app.route("/btk", methods=["POST"])
+def chh():
+    dat = request.data
+    return base64.b64decode(dat)
 
 
 if __name__ == "__main__":
