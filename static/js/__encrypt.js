@@ -277,7 +277,7 @@ function use_decryptor(decrypt) {
 function url_create(_search, param) {
     const search = new URLSearchParams(_search);
     const keys = Object.keys(param);
-    for (k of keys) {
+    for (const k of keys) {
         v = param[k];
         search.set(k, v)
     }
