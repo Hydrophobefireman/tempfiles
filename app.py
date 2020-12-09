@@ -290,21 +290,10 @@ def dl(fn):
     return resp
 
 
-@app.route("/ktb", methods=["POST"])
-def chk():
-    dat = request.data
-    return base64.b64encode(dat)
-
-
 @app.route("/test/", strict_slashes=False)
 def spe():
     return render_template("bm.html")
 
-
-@app.route("/btk", methods=["POST"])
-def chh():
-    dat = request.data
-    return base64.b64decode(dat)
 
 
 if __name__ == "__main__":
