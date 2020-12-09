@@ -1,26 +1,24 @@
 <!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>OK</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
 
-<body>
-
-    <script src='/static/jsmin/device-compat.js'>
-    </script>
+  <body>
+    <script src="/static/jsmin/device-compat.js"></script>
     <script>
-        ((async () => {
-            a = 0
-            for (const b of funcs) {
-                a += await b()
-            }
-            document.body.innerHTML = `TIME TAKEN:${(a/1000).toFixed(3)} Seconds[BETA]`;
-        }))()
+      (async () => {
+        a = 0;
+        for (const b of funcs) {
+          a += await b();
+        }
+        document.body.innerHTML = `TIME TAKEN:${(a / 1000).toFixed(
+          3
+        )} Seconds[BETA]`;
+      })();
     </script>
-</body>
-
+  </body>
 </html>

@@ -1,52 +1,72 @@
 <html>
-
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="/static/favicon.ico">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="/static/favicon.ico" />
     <title>Downloading.</title>
     <link rel="stylesheet" href="/static/cssmin/blob.min.css" />
-</head>
+  </head>
 
-<body>
-    <div class=cst>
-        <div id=main>
-            <div>
-                <div>Name Your File</div>
-                <input class=ipgs id=filename style='width:30%;text-transform: none;user-select: unset;cursor: auto;' value='file'>
-                <button class=ipg id=name-set style="border-radius:5px;">Change Name</button>
-                <div class=ajax-poll-section>
-                    <div class=dets>
-                        <div id='alldeets'>
-                            <span id=till-done></span> % complete</div>
-                        <div id=total-size>Total Size:
-                            <span id=total-size-int></span>MB</div>
-                    </div>
-                </div>
-                <button class=ipg id=progressbtn style="width: 0px;display: none;"></button>
+  <body>
+    <div class="cst">
+      <div id="main">
+        <div>
+          <div>Name Your File</div>
+          <input
+            class="ipgs"
+            id="filename"
+            style="
+              width: 30%;
+              text-transform: none;
+              user-select: unset;
+              cursor: auto;
+            "
+            value="file"
+          />
+          <button class="ipg" id="name-set" style="border-radius: 5px">
+            Change Name
+          </button>
+          <div class="ajax-poll-section">
+            <div class="dets">
+              <div id="alldeets"><span id="till-done"></span> % complete</div>
+              <div id="total-size">
+                Total Size: <span id="total-size-int"></span>MB
+              </div>
             </div>
-            <a href=# id=download-link download='file'>
-                <button class=ipgs id=dl-button style="display: none;">Click Here to Download</button>
-            </a>
+          </div>
+          <button
+            class="ipg"
+            id="progressbtn"
+            style="width: 0px; display: none"
+          ></button>
         </div>
-        <div id='analysed-data' style="display:none;">
-            <div>
-                <span>File Took
-                    <span id=dl_time></span>
-                    Seconds to download
-                </span>
-            </div>
-            <div>
-                <span>Download Speed on our end:</span>
-                <span id=dl_speed></span> MB/sec
-                <span> A slow speed may also hint to the file provider itself being slow</span>
-            </div>
+        <a href="#" id="download-link" download="file">
+          <button class="ipgs" id="dl-button" style="display: none">
+            Click Here to Download
+          </button>
+        </a>
+      </div>
+      <div id="analysed-data" style="display: none">
+        <div>
+          <span
+            >File Took
+            <span id="dl_time"></span>
+            Seconds to download
+          </span>
         </div>
+        <div>
+          <span>Download Speed on our end:</span>
+          <span id="dl_speed"></span> MB/sec
+          <span>
+            A slow speed may also hint to the file provider itself being
+            slow</span
+          >
+        </div>
+      </div>
     </div>
     <script>
-        window.dlurl = "{{url|safe}}";
-        window.dlref = "{{ref|safe}}";
+      window.dlurl = "{{url|safe}}";
+      window.dlref = "{{ref|safe}}";
     </script>
-    <script src='/static/jsmin/downloader.js'></script>
-</body>
-
+    <script src="/static/jsmin/downloader.js"></script>
+  </body>
 </html>

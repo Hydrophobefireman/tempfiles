@@ -1,102 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>SpeedTest</title>
     <style>
-        .center {
-            margin: auto;
-            text-align: center;
-        }
+      .center {
+        margin: auto;
+        text-align: center;
+      }
 
-        .info {
-            padding: 8px;
-            margin-left: 15px;
-            margin-top: 15px;
-            max-width: 90%;
-            border-radius: 12px;
-            border: 1px solid rgb(175, 174, 174);
-            width: 40%;
-            outline: none;
-            background: white;
-            text-transform: uppercase;
-            cursor: pointer;
-            user-select: none;
-            transition: 0.5s;
-        }
+      .info {
+        padding: 8px;
+        margin-left: 15px;
+        margin-top: 15px;
+        max-width: 90%;
+        border-radius: 12px;
+        border: 1px solid rgb(175, 174, 174);
+        width: 40%;
+        outline: none;
+        background: white;
+        text-transform: uppercase;
+        cursor: pointer;
+        user-select: none;
+        transition: 0.5s;
+      }
 
-        #speedtests {
-            font-weight: bold;
-            transition: 0.1s;
+      #speedtests {
+        font-weight: bold;
+        transition: 0.1s;
+      }
 
-        }
+      ._ans_ {
+        display: none;
+        margin-top: 10px;
+        opacity: 0.1;
+      }
 
-        ._ans_ {
-            display: none;
-            margin-top: 10px;
-            opacity: 0.1;
-        }
+      .btnv:hover,
+      .btnc:active {
+        box-shadow: 2px 2px #d9dce0;
+        background-color: #6200ee;
+        color: #fff;
+      }
 
-        .btnv:hover,
-        .btnc:active {
-            box-shadow: 2px 2px #d9dce0;
-            background-color: #6200ee;
-            color: #fff;
-        }
+      #btn_s,
+      .btnv {
+        background-color: #fff;
+        border-radius: 5px;
+        padding: 4px;
+        max-width: 50%;
+        border: 1px solid #6200ee;
+        outline: none;
+        color: #6200ee;
+        min-width: 80px;
+        margin: 10px;
+        cursor: pointer;
+      }
 
-        #btn_s,
-        .btnv {
-            background-color: #fff;
-            border-radius: 5px;
-            padding: 4px;
-            max-width: 50%;
-            border: 1px solid #6200ee;
-            outline: none;
-            color: #6200ee;
-            min-width: 80px;
-            margin: 10px;
-            cursor: pointer;
-        }
-
-        .avgd {
-            display: none;
-            text-align: left;
-            margin-top: 10px;
-            margin-bottom: 10px;
-        }
+      .avgd {
+        display: none;
+        text-align: left;
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <div class="center">
-        <div id="main">
-            <div id="content">
-                <div style="margin-top:60px"><button class=info id=info-st>Why not <span id='speedtests'>Fast.com</span>?</button>
-                    <div id=spdinfo class="_ans_" style="display:none">I believe Some ISPs speed up your connection
-                        when
-                        they realise you are on
-                        a speed
-                        test site..so to find out if that't true I made this
-                    </div>
-                </div>
-                <div>
-                    <button class=info id=start_btn>Start</button>
-                </div>
-                <div id=testarea style="margin-top:20px;display: none;">
-                    <div style="display:block;text-align:left">Download Data:</div>
-                    <div class="avgd" id='avg_dl'></div>
-                    <button id='progress-div_dl' class=btnv style="background-color:#6200ee;width:0px;display:block;opacity: 0;"></button>
-                    <div style="display:block;text-align:left">Upload Data:</div>
-                    <div class=avgd id='avg_ul'></div>
-                    <button id='progress-div_ul' class=btnv style="background-color:#6200ee;width:0px;display:block;opacity: 0;"></button>
-                </div>
+      <div id="main">
+        <div id="content">
+          <div style="margin-top: 60px">
+            <button class="info" id="info-st">
+              Why not <span id="speedtests">Fast.com</span>?
+            </button>
+            <div id="spdinfo" class="_ans_" style="display: none">
+              I believe Some ISPs speed up your connection when they realise you
+              are on a speed test site..so to find out if that't true I made
+              this
             </div>
+          </div>
+          <div>
+            <button class="info" id="start_btn">Start</button>
+          </div>
+          <div id="testarea" style="margin-top: 20px; display: none">
+            <div style="display: block; text-align: left">Download Data:</div>
+            <div class="avgd" id="avg_dl"></div>
+            <button
+              id="progress-div_dl"
+              class="btnv"
+              style="
+                background-color: #6200ee;
+                width: 0px;
+                display: block;
+                opacity: 0;
+              "
+            ></button>
+            <div style="display: block; text-align: left">Upload Data:</div>
+            <div class="avgd" id="avg_ul"></div>
+            <button
+              id="progress-div_ul"
+              class="btnv"
+              style="
+                background-color: #6200ee;
+                width: 0px;
+                display: block;
+                opacity: 0;
+              "
+            ></button>
+          </div>
         </div>
+      </div>
     </div>
-    <script src='/static/js/speedtest.js'></script>
-</body>
-
+    <script src="/static/js/speedtest.js"></script>
+  </body>
 </html>

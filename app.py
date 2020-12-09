@@ -143,10 +143,12 @@ def send_image():
         buf = base64.b64encode(f.read()).decode()
     return Response(response=buf, mimetype="application/octet-stream")
 
-
+@app.route("/fetch_url/",strict_slashes=False)
 @app.route("/fetch/", strict_slashes=False)
 def remote_upl():
-    url = request.args.get("url", "").strip()
+    url = request.args.get("url", request.args.get("u","")).strip()
+    if not url:
+        return "no"
     parsed_url = urlparse(url)
     if not parsed_url.scheme == "http" and not parsed_url.scheme == "https":
         return f"Invalid URL[Reason:Bad Protocol:{parsed_url.scheme}"

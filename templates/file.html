@@ -1,43 +1,57 @@
 <!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>download {{f}}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel='stylesheet' href='/static/cssmin/main.css' />
-    <meta id=constants data-filename="{{f}}" data-js_iv="{{iv}}" />
-</head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/static/cssmin/main.css" />
+    <meta id="constants" data-filename="{{f}}" data-js_iv="{{iv}}" />
+  </head>
 
-<body>
-    <script src='/static/jsmin/fileutils.js'></script>
-    <div class=center>
-        <div><span id=filename-dl>download {{f}}</span></div>
-        <div>
-            <div id=main>
-                <div>
-                    <span style="margin-top: 10px;" id='dliprgr'>Download in Progress..</span>
-                    <div style="margin-top: 20px;"> </div>
-                    <button id=progrs style="display:none;max-width:100%;width:0px;" class=ipg></button>
-                    <div id=div_></div>
-                    <div>
-                        <a id="dl-a" download={{f}}>
-                            <button style="display: none;" id=download-link class=ipgs>Click To Download </button>
-                        </a>
-                    </div>
-                </div>
+  <body>
+    <script src="/static/jsmin/fileutils.js"></script>
+    <div class="center">
+      <div><span id="filename-dl">download {{f}}</span></div>
+      <div>
+        <div id="main">
+          <div>
+            <span style="margin-top: 10px" id="dliprgr"
+              >Download in Progress..</span
+            >
+            <div style="margin-top: 20px"></div>
+            <button
+              id="progrs"
+              style="display: none; max-width: 100%; width: 0px"
+              class="ipg"
+            ></button>
+            <div id="div_"></div>
+            <div>
+              <a id="dl-a" download="{{f}}">
+                <button style="display: none" id="download-link" class="ipgs">
+                  Click To Download
+                </button>
+              </a>
             </div>
+          </div>
         </div>
-        <div id=get-key style="display:none;margin-top:15px;">
-            <div>Your Key Is Incorrect or invalid</div>
-            <input id="keyval" value="" type="password" class=ipgs maxlength="1000" style="text-transform:none;max-width:30%;cursor:text;">
-            <button id=keybtn class=ipgs style="width:auto;">Enter Key</button>
-        </div>
+      </div>
+      <div id="get-key" style="display: none; margin-top: 15px">
+        <div>Your Key Is Incorrect or invalid</div>
+        <input
+          id="keyval"
+          value=""
+          type="password"
+          class="ipgs"
+          maxlength="1000"
+          style="text-transform: none; max-width: 30%; cursor: text"
+        />
+        <button id="keybtn" class="ipgs" style="width: auto">Enter Key</button>
+      </div>
     </div>
     <script>
-        _decrypt();
-        /*
+      _decrypt();
+      /*
                 document.getElementById("progrs").style.display = "block";
                 if (!filesize == 0) {
                 document.getElementById("div_").innerHTML = (event.loaded / (1024 * 1024)).toFixed(2) + " MB of " +
@@ -51,6 +65,5 @@
                 document.getElementById("progrs").innerHTML = "Unknown File Size";
                 */
     </script>
-</body>
-
+  </body>
 </html>

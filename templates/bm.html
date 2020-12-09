@@ -1,50 +1,48 @@
 <!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>Device BenchMarks</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src='/static/jsmin/device.js'></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="/static/jsmin/device.js"></script>
     <style>
-        .center {
-            margin: auto;
-            text-align: center
-        }
+      .center {
+        margin: auto;
+        text-align: center;
+      }
     </style>
-    <link rel='stylesheet' href="/static/cssmin/main.css">
-</head>
+    <link rel="stylesheet" href="/static/cssmin/main.css" />
+  </head>
 
-<body>
+  <body>
     <div class="center">
-        <div id="main">
-            <div class="content">
-                <button class="btn" id=test-start>Start Test</button>
-                <div id="testarea" style="display:none">
-                    <div id="test1" data-test-type="sbc"></div>
-                    <div id="test2" data-test-type="videoframes"></div>
-                    <div id="test3" data-test-type="image-processing"></div>
-                    <div id="test4" data-test-type="enc-test"></div>
-                </div>
-            </div>
-            <script>
-                ((async () => {
-                    const btn = document.getElementById('test-start');
-                    btn.onclick = async e => {
-                        document.getElementById('testarea').style.display = 'block';
-                        const keys = Object.keys(window.funcs_el)
-                        for (b of keys) {
-                            const el = document.getElementById(b);
-                            const func = window.funcs_el[b];
-                            el.innerHTML = 'Executing Task'
-                            el.innerHTML = `${await func()}Seconds`;
-                        }
-                    }
-                }))()
-            </script>
+      <div id="main">
+        <div class="content">
+          <button class="btn" id="test-start">Start Test</button>
+          <div id="testarea" style="display: none">
+            <div id="test1" data-test-type="sbc"></div>
+            <div id="test2" data-test-type="videoframes"></div>
+            <div id="test3" data-test-type="image-processing"></div>
+            <div id="test4" data-test-type="enc-test"></div>
+          </div>
         </div>
+        <script>
+          (async () => {
+            const btn = document.getElementById("test-start");
+            btn.onclick = async (e) => {
+              document.getElementById("testarea").style.display = "block";
+              const keys = Object.keys(window.funcs_el);
+              for (b of keys) {
+                const el = document.getElementById(b);
+                const func = window.funcs_el[b];
+                el.innerHTML = "Executing Task";
+                el.innerHTML = `${await func()}Seconds`;
+              }
+            };
+          })();
+        </script>
+      </div>
     </div>
-</body>
-
+  </body>
 </html>
