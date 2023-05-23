@@ -1,4 +1,4 @@
 flask==1.1.2
 gunicorn==19.9.0
 django-htmlmin==0.11.0
-requests==2.25.0
+requests==2.31.0
